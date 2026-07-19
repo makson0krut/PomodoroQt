@@ -10,7 +10,7 @@
 MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
     timerButton = new QPushButton("Таймер", this);
     tasksButton = new QPushButton("Задачи", this);
-    statsButton = new QPushButton("Статичтика", this);
+    statsButton = new QPushButton("Статистика", this);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(timerButton);
@@ -20,7 +20,7 @@ MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
 
     connect(timerButton, &QPushButton::clicked, this, &MainMenuWindow::timerButtonClicked);
     connect(tasksButton, &QPushButton::clicked, this, &MainMenuWindow::onStubButtonClicked);
-    connect(statsButton, &QPushButton::clicked, this, &MainMenuWindow::onStubButtonClicked);
+    connect(statsButton, &QPushButton::clicked, this, &MainMenuWindow::statsButtonClicked);
 }
 
 void MainMenuWindow::onStubButtonClicked() {

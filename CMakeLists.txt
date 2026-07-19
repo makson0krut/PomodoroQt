@@ -12,6 +12,10 @@ add_executable(PomodoroQt main.cpp
         pomodorowindow.cpp
         pomodorowindow.h
         mainmenuwindow.cpp
-        mainmenuwindow.h)
+        mainmenuwindow.h
+        circulartimerwidget.cpp
+        circulartimerwidget.h
+        statswindow.cpp
+        statswindow.h)
 
 target_link_libraries(PomodoroQt PRIVATE Qt6::Widgets)

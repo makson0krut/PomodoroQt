@@ -13,6 +13,10 @@
 
 #include <string>
 #include <cstdlib>
+#include <fstream>
+#include <ctime>
+
+#include "circulartimerwidget.h"
 
 //Описание стадий
 enum class PomodoroState {
@@ -27,6 +31,7 @@ class PomodoroWindow : public QWidget {
 public:
     PomodoroWindow(QWidget* parent = nullptr);
     ~PomodoroWindow();
+    void resetTimer();
 
 private slots:
     void onTick();
@@ -47,16 +52,22 @@ private:
     void playSound();
     void startMusic();
     void stopMusic();
+    void logStats();
+
 
     PomodoroState state;
     int completedWorkSessions;
     int remainingSeconds;
+    std::string getCurrentDateTime();
+    bool shouldLogStats();
+
 
     QLabel* timeLabel;
     QLabel* stateLabel;
     QPushButton* startPauseButton;
     QPushButton* backButton;
     QTimer* timer;
+    CircularTimerWidget* circularTimer;
 };
 
 

@@ -14,6 +14,7 @@ public:
     MainMenuWindow(QWidget* parent = nullptr);
 signals:
     void timerButtonClicked();
+    void statsButtonClicked();
 private slots:
     void onStubButtonClicked();
 private:
@@ -24,4 +25,4 @@ private:
 
 
 
-#endif MAINMENUWINDOW_H
+#endif //MAINMENUWINDOW_H
