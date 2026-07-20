@@ -28,7 +28,7 @@ MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
     setLayout(layout);
 
     connect(timerButton, &QPushButton::clicked, this, &MainMenuWindow::timerButtonClicked);
-    connect(tasksButton, &QPushButton::clicked, this, &MainMenuWindow::onStubButtonClicked);
+    connect(tasksButton, &QPushButton::clicked, this, &MainMenuWindow::tasksButtonClicked);
     connect(statsButton, &QPushButton::clicked, this, &MainMenuWindow::statsButtonClicked);
 }
 

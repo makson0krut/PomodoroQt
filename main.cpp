@@ -3,6 +3,7 @@
 #include "pomodorowindow.h"
 #include "mainmenuwindow.h"
 #include "statswindow.h"
+#include "taskwindow.h"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -67,16 +68,31 @@ int main(int argc, char* argv[]) {
     QPushButton:pressed {
         background-color: #585b70;
     }
+
+    QLineEdit, QDateEdit {
+        background-color: #313244;
+        color: #cdd6f4;
+        border: 2px solid #45475a;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    QLineEdit:focus, QDateEdit:focus {
+        border: 2px solid #89b4fa;
+    }
 )");
     QStackedWidget stack;
 
     MainMenuWindow* menu = new MainMenuWindow();
     PomodoroWindow* timerWindow = new PomodoroWindow();
     StatsWindow* statsWindow = new StatsWindow();
+    TasksWindow* tasksWindow = new TasksWindow();
 
     stack.addWidget(menu);
     stack.addWidget(timerWindow);
     stack.addWidget(statsWindow);
+    stack.addWidget(tasksWindow);
 
     QObject::connect(menu, &MainMenuWindow::timerButtonClicked, [&stack, timerWindow]() {
         timerWindow->resetTimer();
@@ -92,15 +108,25 @@ int main(int argc, char* argv[]) {
     statsWindow->loadStats();
     stack.setCurrentWidget(statsWindow);
     statsWindow->setFocus();
-});
+    });
 
     QObject::connect(statsWindow, &StatsWindow::backToMenuRequested, [&stack, menu]() {
         stack.setCurrentWidget(menu);
         menu->setFocus();
     });
+    QObject::connect(menu, &MainMenuWindow::tasksButtonClicked, [&stack, tasksWindow]() {
+    tasksWindow->loadTasks();
+    stack.setCurrentWidget(tasksWindow);
+    tasksWindow->setFocus();
+});
+
+    QObject::connect(tasksWindow, &TasksWindow::backToMenuRequested, [&stack, menu]() {
+        stack.setCurrentWidget(menu);
+        menu->setFocus();
+    });
 
     stack.setCurrentWidget(menu);
-    stack.resize(400, 500);
+    stack.resize(450, 500);
     stack.show();
 
     return app.exec();

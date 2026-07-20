@@ -74,9 +74,9 @@ PomodoroState PomodoroWindow::getNextState(PomodoroState current, int completedW
 }
 int PomodoroWindow::getDurationForState(PomodoroState state) {
     switch (state) {
-        case PomodoroState::Work: return 5;
-        case PomodoroState::ShortBreak: return 3;
-        case PomodoroState::LongBreak: return 7;
+        case PomodoroState::Work: return 25*60;
+        case PomodoroState::ShortBreak: return 5*60;
+        case PomodoroState::LongBreak: return 10*60;
     }
     return 5;
 }

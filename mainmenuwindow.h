@@ -16,6 +16,7 @@ public:
 signals:
     void timerButtonClicked();
     void statsButtonClicked();
+    void tasksButtonClicked();
 private slots:
     void onStubButtonClicked();
 private:
