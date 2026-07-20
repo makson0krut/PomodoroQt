@@ -7,6 +7,7 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QLabel>
 
 class MainMenuWindow : public QWidget {
     Q_OBJECT
@@ -21,6 +22,7 @@ private:
     QPushButton* timerButton;
     QPushButton* tasksButton;
     QPushButton* statsButton;
+    QLabel* titleLabel;
 };
 
 

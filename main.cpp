@@ -14,6 +14,29 @@ int main(int argc, char* argv[]) {
         font-family: -apple-system;
     }
 
+        QLabel#titleLabel {
+        font-size: 32px;
+        font-weight: bold;
+        color: #f9e2af;
+        qproperty-alignment: AlignCenter;
+    }
+
+    QPushButton#primaryButton {
+        background-color: #89b4fa;
+        color: #1e1e2e;
+        font-weight: bold;
+        padding: 14px 20px;
+        font-size: 16px;
+    }
+
+    QPushButton#primaryButton:hover {
+        background-color: #a6c4fc;
+    }
+
+    QPushButton#primaryButton:pressed {
+        background-color: #6c9ff0;
+    }
+
     QLabel#stateLabel {
         font-size: 20px;
         color: #89b4fa;

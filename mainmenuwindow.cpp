@@ -8,11 +8,20 @@
 #include <QMessageBox>
 
 MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
+
+    titleLabel = new QLabel("Pomodoro", this);
+    titleLabel->setObjectName("titleLabel");
+
     timerButton = new QPushButton("Таймер", this);
+    timerButton->setObjectName("primaryButton");
     tasksButton = new QPushButton("Задачи", this);
     statsButton = new QPushButton("Статистика", this);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setContentsMargins(30, 40, 30, 30);
+    layout->setSpacing(15);
+    layout->addWidget(titleLabel);
+    layout->addSpacing(20);
     layout->addWidget(timerButton);
     layout->addWidget(tasksButton);
     layout->addWidget(statsButton);
