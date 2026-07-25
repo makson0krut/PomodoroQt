@@ -5,6 +5,8 @@
 #include "pomodorowindow.h"
 #include <QVBoxLayout>
 #include <QKeyEvent>
+#include <QCoreApplication>
+#include <QDir>
 
 PomodoroWindow::PomodoroWindow(QWidget* parent) : QWidget(parent) {
     startMusic();
@@ -12,6 +14,13 @@ PomodoroWindow::PomodoroWindow(QWidget* parent) : QWidget(parent) {
     //Таймер для красоты
     circularTimer = new CircularTimerWidget(this);
     circularTimer->setMinimumSize(200, 200);
+
+
+    taskSelectorLabel = new QLabel("Работаю над:", this);
+    taskSelectorLabel->setObjectName("taskSelectorLabel");
+    taskSelector = new QComboBox(this);
+    taskSelector->addItem("Без привязки к задаче");
+    taskSelector->addItems(loadIncompleteTasks());
 
     //Переменны которые передаем в лейбл
     state = PomodoroState::Work;
@@ -33,6 +42,9 @@ PomodoroWindow::PomodoroWindow(QWidget* parent) : QWidget(parent) {
     layout->setSpacing(15);
 
     //Порядок вывода
+    layout->addWidget(taskSelectorLabel);
+    layout->addWidget(taskSelector);
+    layout->addWidget(stateLabel);
     layout->addWidget(stateLabel);
     layout->addWidget(circularTimer);
     layout->addWidget(timeLabel);
@@ -59,6 +71,10 @@ void PomodoroWindow::resetTimer() {
     startPauseButton->setText("Start");
     circularTimer->setTime(remainingSeconds, getDurationForState(state));
     updateDisplay();
+
+    taskSelector->clear();
+    taskSelector->addItem("Без привязки к задаче");
+    taskSelector->addItems(loadIncompleteTasks());
 }
 //Получаем какая стадия будет следующей
 PomodoroState PomodoroWindow::getNextState(PomodoroState current, int completedWorkSessions) {
@@ -74,9 +90,9 @@ PomodoroState PomodoroWindow::getNextState(PomodoroState current, int completedW
 }
 int PomodoroWindow::getDurationForState(PomodoroState state) {
     switch (state) {
-        case PomodoroState::Work: return 25*60;
-        case PomodoroState::ShortBreak: return 5*60;
-        case PomodoroState::LongBreak: return 10*60;
+        case PomodoroState::Work: return 5;
+        case PomodoroState::ShortBreak: return 2;
+        case PomodoroState::LongBreak: return 6;
     }
     return 5;
 }
@@ -143,16 +159,11 @@ void PomodoroWindow::onTick() {
 std::string PomodoroWindow::getCurrentDateTime() {
     std::time_t now = std::time(nullptr);
     std::tm* localTime = std::localtime(&now);
-
     static const std::string months[] = {
-        "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
-        "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
+        "января", "февраля", "марта", "апреля", "мая", "июня",
+        "июля", "августа", "сентября", "октября", "ноября", "декабря"
     };
-
-    int day = localTime->tm_mday;
-    int monthIndex = localTime->tm_mon;
-
-    return std::to_string(day) + " " + months[monthIndex];
+    return std::to_string(localTime->tm_mday) + " " + months[localTime->tm_mon];
 }
 bool PomodoroWindow::shouldLogStats() {
     if (completedWorkSessions % 4 == 0 && completedWorkSessions != 0)
@@ -161,20 +172,79 @@ bool PomodoroWindow::shouldLogStats() {
         return false;
 }
 void PomodoroWindow::logStats() {
-    std::ofstream file("pomodoro_stats.txt", std::ios::app);
+    std::string path = getStorageDirPath().toStdString() + "/pomodoro_stats.txt";
+    std::ofstream file(path, std::ios::app);
     if (file.is_open()) {
-        file << getCurrentDateTime() << " - Цикл завершён\n";
+        file << getIsoDate() << "\n";
         file.close();
     }
+}
+
+std::string PomodoroWindow::getIsoDate() {
+    std::time_t now = std::time(nullptr);
+    std::tm* localTime = std::localtime(&now);
+    char buffer[11];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", localTime);
+    return std::string(buffer);
 }
 //Музыка
 void PomodoroWindow::playSound() {
     std::system(("afplay /System/Library/Sounds/Glass.aiff &"));
 }
 void PomodoroWindow::startMusic() {
-    std::system("(ls ~/pomodoro_music/*.mp3 | sort -R | while read f; do afplay \"$f\"; done) &");
+    std::system(
+        "/opt/homebrew/bin/mpv --no-video --shuffle --loop-playlist --volume=50 "
+        "--input-ipc-server=/tmp/pomodoro_mpv_socket "
+        "~/pomodoro_music/*.mp3 "
+        "> /dev/null 2>&1 &"
+    );
+}
+void PomodoroWindow::setVolume(int volumePercent) {
+    std::string command = "echo '{\"command\": [\"set_property\", \"volume\", "
+        + std::to_string(volumePercent)
+        + "]}' | /opt/homebrew/bin/socat - /tmp/pomodoro_mpv_socket";
+    std::system(command.c_str());
 }
 void PomodoroWindow::stopMusic() {
-    std::system("pkill -f 'pomodoro_music'");
-    std::system("pkill afplay");
+    std::system("pkill mpv");
+}
+QString PomodoroWindow::getStorageDirPath() {
+    QDir dir(QCoreApplication::applicationDirPath());
+    dir.cdUp(); // из .../PomodoroQt.app/Contents/MacOS в .../PomodoroQt.app/Contents
+    dir.cdUp(); // в .../PomodoroQt.app
+    dir.cdUp(); // в папку, содержащую .app
+    return dir.absolutePath();
+}
+
+QStringList PomodoroWindow::loadIncompleteTasks() {
+    QStringList result;
+    std::string path = getStorageDirPath().toStdString() + "/pomodoro_tasks.txt";
+    std::ifstream file(path);
+
+    if (!file.is_open()) {
+        return result;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) {
+            continue;
+        }
+
+        size_t firstSep = line.find('|');
+        size_t secondSep = line.find('|', firstSep + 1);
+        if (firstSep == std::string::npos || secondSep == std::string::npos) {
+            continue;
+        }
+
+        std::string donePart = line.substr(0, firstSep);
+        std::string textPart = line.substr(secondSep + 1);
+
+        if (donePart == "0") { // только невыполненные
+            result.append(QString::fromStdString(textPart));
+        }
+    }
+
+    file.close();
+    return result;
 }

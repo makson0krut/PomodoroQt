@@ -8,6 +8,10 @@
 #include <QWidget>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QDate>
+#include <vector>
+#include <QLabel>
+#include "statschartwidget.h"
 
 class StatsWindow : public QWidget {
     Q_OBJECT
@@ -19,9 +23,18 @@ signals:
 private slots:
     void onClearClicked();
 private:
-    QTextEdit* statsDisplay;
     QPushButton* clearButton;
     QPushButton* backButton;
+    QString getStorageDirPath();
+
+    //Парсинг статистики
+    std::vector<QDate> parseStatsFile();
+
+    QLabel* todayCountLabel;
+    QLabel* weekCountLabel;
+    QLabel* totalCountLabel;
+
+    StatsChartWidget* chartWidget;
 };
 
 

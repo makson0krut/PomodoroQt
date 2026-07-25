@@ -81,6 +81,43 @@ int main(int argc, char* argv[]) {
     QLineEdit:focus, QDateEdit:focus {
         border: 2px solid #89b4fa;
     }
+    QLabel#statsCounter {
+        font-size: 22px;
+        font-weight: bold;
+        color: #9ac3fb;
+        padding: 8px;
+    }
+    QLabel#taskSelectorLabel {
+        font-size: 13px;
+        color: #9399b2;
+    }
+
+    QComboBox#taskSelector {
+        background-color: #313244;
+        color: #cdd6f4;
+        border: 2px solid #45475a;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    QComboBox#taskSelector:hover {
+        border: 2px solid #89b4fa;
+    }
+
+    QComboBox#taskSelector::drop-down {
+        border: none;
+        width: 30px;
+    }
+
+    QComboBox#taskSelector QAbstractItemView {
+        background-color: #313244;
+        color: #cdd6f4;
+        selection-background-color: #45475a;
+        border: 2px solid #45475a;
+        border-radius: 8px;
+        padding: 4px;
+    }
 )");
     QStackedWidget stack;
 
@@ -124,6 +161,8 @@ int main(int argc, char* argv[]) {
         stack.setCurrentWidget(menu);
         menu->setFocus();
     });
+    //Громкость
+    QObject::connect(menu, &MainMenuWindow::volumeChanged, timerWindow, &PomodoroWindow::setVolume);
 
     stack.setCurrentWidget(menu);
     stack.resize(450, 500);

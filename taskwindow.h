@@ -36,6 +36,7 @@ private:
     int categorizeDate(const QDate& date, const QDate& today);
     QString formatTaskDate(const QDate& date);
     void addCategorySection(const QString& title, const QColor& color, int categoryIndex, const QDate& today);
+    QString getStorageDirPath();
 
     std::vector<Task> tasks;
     std::vector<int> rowToTaskIndex; // -1 = это заголовок, иначе индекс в tasks

@@ -10,6 +10,8 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QComboBox>
+#include <QStringList>
 
 #include <string>
 #include <cstdlib>
@@ -32,6 +34,7 @@ public:
     PomodoroWindow(QWidget* parent = nullptr);
     ~PomodoroWindow();
     void resetTimer();
+    void setVolume(int volumePercent);
 
 private slots:
     void onTick();
@@ -53,13 +56,15 @@ private:
     void startMusic();
     void stopMusic();
     void logStats();
-
+    QString getStorageDirPath();
+    QStringList loadIncompleteTasks();
 
     PomodoroState state;
     int completedWorkSessions;
     int remainingSeconds;
     std::string getCurrentDateTime();
     bool shouldLogStats();
+    std::string getIsoDate();
 
 
     QLabel* timeLabel;
@@ -68,6 +73,8 @@ private:
     QPushButton* backButton;
     QTimer* timer;
     CircularTimerWidget* circularTimer;
+    QComboBox* taskSelector;
+    QLabel* taskSelectorLabel;
 };
 
 

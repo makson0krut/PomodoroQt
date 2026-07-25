@@ -4,6 +4,8 @@
 #include <fstream>
 #include <algorithm>
 #include <QFont>
+#include <QCoreApplication>
+#include <QDir>
 
 TasksWindow::TasksWindow(QWidget* parent) : QWidget(parent) {
     taskList = new QListWidget(this);
@@ -167,7 +169,8 @@ void TasksWindow::onItemChanged(QListWidgetItem* item) {
 }
 
 void TasksWindow::saveTasks() {
-    std::ofstream file("pomodoro_tasks.txt", std::ios::trunc);
+    std::string path = getStorageDirPath().toStdString() + "/pomodoro_tasks.txt";
+    std::ofstream file(path, std::ios::trunc);
     if (file.is_open()) {
         for (const Task& task : tasks) {
             int done = task.done ? 1 : 0;
@@ -180,8 +183,9 @@ void TasksWindow::saveTasks() {
 
 void TasksWindow::loadTasks() {
     tasks.clear();
+    std::string path = getStorageDirPath().toStdString() + "/pomodoro_tasks.txt";
+    std::ifstream file(path);
 
-    std::ifstream file("pomodoro_tasks.txt");
     if (!file.is_open()) {
         refreshList();
         return;
@@ -214,4 +218,11 @@ void TasksWindow::loadTasks() {
     file.close();
     sortTasksByDate();
     refreshList();
+}
+QString TasksWindow::getStorageDirPath() {
+    QDir dir(QCoreApplication::applicationDirPath());
+    dir.cdUp(); // из .../PomodoroQt.app/Contents/MacOS в .../PomodoroQt.app/Contents
+    dir.cdUp(); // в .../PomodoroQt.app
+    dir.cdUp(); // в папку, СОДЕРЖАЩУЮ .app — то, что нам нужно
+    return dir.absolutePath();
 }

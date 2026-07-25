@@ -8,7 +8,6 @@
 #include <QMessageBox>
 
 MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
-
     titleLabel = new QLabel("Pomodoro", this);
     titleLabel->setObjectName("titleLabel");
 
@@ -16,6 +15,10 @@ MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
     timerButton->setObjectName("primaryButton");
     tasksButton = new QPushButton("Задачи", this);
     statsButton = new QPushButton("Статистика", this);
+
+    volumeSlider = new QSlider(Qt::Horizontal, this);
+    volumeSlider->setRange(0, 100);
+    volumeSlider->setValue(50);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(30, 40, 30, 30);
@@ -25,13 +28,19 @@ MainMenuWindow::MainMenuWindow(QWidget* parent) : QWidget(parent) {
     layout->addWidget(timerButton);
     layout->addWidget(tasksButton);
     layout->addWidget(statsButton);
+    layout->addSpacing(20);
+    layout->addWidget(volumeSlider);
     setLayout(layout);
 
     connect(timerButton, &QPushButton::clicked, this, &MainMenuWindow::timerButtonClicked);
-    connect(tasksButton, &QPushButton::clicked, this, &MainMenuWindow::tasksButtonClicked);
     connect(statsButton, &QPushButton::clicked, this, &MainMenuWindow::statsButtonClicked);
+    connect(tasksButton, &QPushButton::clicked, this, &MainMenuWindow::tasksButtonClicked);
+    connect(volumeSlider, &QSlider::valueChanged, this, &MainMenuWindow::onVolumeSliderChanged);
 }
 
 void MainMenuWindow::onStubButtonClicked() {
     QMessageBox::information(this, "В разработке", "Эта функция еще не реализовона.");
+}
+void MainMenuWindow::onVolumeSliderChanged(int value) {
+    emit volumeChanged(value);
 }
